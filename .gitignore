@@ -1,0 +1,15 @@
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+
+# Secrets (never commit)
+.environment/GOOGLE_API_KEY
+.environment/GGemini_Key
+.environment/*.key
+.environment/*.pem
+.environment/*.p12
+.environment/*.pfx
+.environment/*.env
+.environment/.env
+
