@@ -16,11 +16,11 @@
   // workflow behind it rebuilds a single shared in-memory vector store
   // from this file, so there's no session/document ID to track — one
   // contract loaded at a time is the assumption.
-  const INGEST_WEBHOOK_URL = "https://jyotiv99.app.n8n.cloud/webhook-test/b0ddf539-6bf7-4265-b41c-c094f7dfe19a";
+  const INGEST_WEBHOOK_URL = "https://jyotiv99.app.n8n.cloud/webhook/b0ddf539-6bf7-4265-b41c-c094f7dfe19a";
   // Chat webhook: takes just the typed message, per turn. It answers
   // against whatever contract the ingestion webhook most recently
   // indexed into the shared store.
-  const CHAT_WEBHOOK_URL = "https://jyotiv99.app.n8n.cloud/webhook-test/27c91df5-80d8-413b-9a0e-1cec720b2262";
+  const CHAT_WEBHOOK_URL = "https://jyotiv99.app.n8n.cloud/webhook/27c91df5-80d8-413b-9a0e-1cec720b2262";
 
   let currentObjectUrl = null;
   let selectedFile = null;
