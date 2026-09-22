@@ -198,6 +198,21 @@ body {
   border-bottom-left-radius: 4px;
 }
 
+.status-bubble {
+  font-style: italic;
+  color: var(--muted-text);
+}
+
+.message.error {
+  justify-content: flex-start;
+}
+
+.message.error .message-bubble {
+  background: #fdecea;
+  color: #b3261e;
+  border-bottom-left-radius: 4px;
+}
+
 .chat-input-area {
   display: flex;
   gap: 8px;
@@ -219,6 +234,12 @@ body {
 #chat-input:focus {
   outline: none;
   border-color: var(--accent-color);
+}
+
+#chat-input:disabled {
+  background: #f0f2f5;
+  color: var(--muted-text);
+  cursor: not-allowed;
 }
 
 .send-btn {
