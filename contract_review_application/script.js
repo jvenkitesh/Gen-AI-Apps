@@ -16,11 +16,11 @@
   // behind it rebuilds a single shared in-memory vector store from this
   // file, so there's no session/document ID to track — one contract loaded
   // at a time is the assumption.
-  const INGEST_WEBHOOK_URL = 'https://jyotiv99.app.n8n.cloud/webhook-test/db9975ee-656e-43f6-b744-3764e1d5ab42';
+  const INGEST_WEBHOOK_URL = 'https://jyotiv99.app.n8n.cloud/webhook/db9975ee-656e-43f6-b744-3764e1d5ab42';
   // Chat webhook: takes just the typed message, per turn. It answers
   // against whatever contract the ingestion webhook most recently indexed
   // into the shared store.
-  const CHAT_WEBHOOK_URL = 'https://jyotiv99.app.n8n.cloud/webhook-test/d9fcf5d7-7e4a-4682-9e47-21338e063954';
+  const CHAT_WEBHOOK_URL = 'https://jyotiv99.app.n8n.cloud/webhook/d9fcf5d7-7e4a-4682-9e47-21338e063954';
 
   let currentObjectUrl = null;
 
