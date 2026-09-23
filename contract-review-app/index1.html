@@ -302,7 +302,6 @@
           autocomplete="off"
         />
         <button type="button" id="sendBtn" class="btn">Send</button>
-        <button type="button" id="downloadResponsesBtn" class="btn btn-secondary" hidden>Download Responses</button>
       </form>
     </section>
   </main>
@@ -320,7 +319,6 @@
       const chatInput = document.getElementById("chatInput");
       const chatMessages = document.getElementById("chatMessages");
       const sendBtn = document.getElementById("sendBtn");
-      const downloadResponsesBtn = document.getElementById("downloadResponsesBtn");
 
       // Production webhook URL for this workflow. Requires the workflow's
       // "Active" toggle to be on in the n8n editor. While testing, you can
@@ -433,83 +431,6 @@
         return "Received an empty response from the workflow.";
       }
 
-      // Successful question/response pairs are kept in the browser's
-      // localStorage (no backend) and exported as config.json on demand.
-      const RESPONSES_STORAGE_KEY = "contractReviewResponses";
-
-      function loadSavedResponses() {
-        try {
-          const saved = JSON.parse(localStorage.getItem(RESPONSES_STORAGE_KEY));
-          return Array.isArray(saved) ? saved : [];
-        } catch (err) {
-          return [];
-        }
-      }
-
-      // The AI Agent may return a structured answer ({ response, citation,
-      // reasoning }) either as JSON or as a JSON string (optionally inside
-      // a ```json fence), possibly wrapped in n8n's { output: ... }.
-      function findStructuredReply(data) {
-        if (typeof data === "string") {
-          const fence = data.match(/```(?:json)?\s*([\s\S]*?)```/i);
-          const candidate = (fence ? fence[1] : data).trim();
-          if (!candidate.startsWith("{")) return null;
-          try {
-            return findStructuredReply(JSON.parse(candidate));
-          } catch (err) {
-            return null;
-          }
-        }
-        if (Array.isArray(data)) return findStructuredReply(data[0]);
-        if (data && typeof data === "object") {
-          if ("citation" in data || "citations" in data || "reasoning" in data) {
-            return data;
-          }
-          const inner = data.output ?? data.reply ?? data.response ?? data.message ?? data.text;
-          return inner !== undefined ? findStructuredReply(inner) : null;
-        }
-        return null;
-      }
-
-      function saveResponse(question, data, replyText) {
-        const structured = findStructuredReply(data) || {};
-        const answer =
-          structured.response ?? structured.answer ?? structured.reply ?? structured.output;
-        const citation = structured.citation ?? structured.citations ?? [];
-
-        const entries = loadSavedResponses();
-        entries.push({
-          question,
-          response: typeof answer === "string" ? answer : replyText,
-          citation: Array.isArray(citation) ? citation : [citation],
-          reasoning: typeof structured.reasoning === "string" ? structured.reasoning : "",
-        });
-
-        try {
-          localStorage.setItem(RESPONSES_STORAGE_KEY, JSON.stringify(entries));
-          downloadResponsesBtn.hidden = false;
-        } catch (err) {
-          console.error("Could not save response to localStorage:", err);
-        }
-      }
-
-      function downloadResponses() {
-        const blob = new Blob([JSON.stringify(loadSavedResponses(), null, 2)], {
-          type: "application/json",
-        });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "config.json";
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-      }
-
-      downloadResponsesBtn.hidden = loadSavedResponses().length === 0;
-      downloadResponsesBtn.addEventListener("click", downloadResponses);
-
       async function sendMessage() {
         const text = chatInput.value.trim();
         if (!text) return;
@@ -546,9 +467,7 @@
             : await response.text();
 
           thinkingEl.remove();
-          const replyText = extractReplyText(data);
-          addMessage(replyText, "assistant");
-          saveResponse(text, data, replyText);
+          addMessage(extractReplyText(data), "assistant");
         } catch (err) {
           thinkingEl.remove();
           addMessage(`Could not reach the workflow: ${err.message}`, "error");
