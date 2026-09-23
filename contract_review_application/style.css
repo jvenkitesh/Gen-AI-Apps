@@ -267,3 +267,104 @@ body {
     flex-direction: column;
   }
 }
+
+/* Trial 3: JSON dataset rendering */
+.header-tag {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #eef4ff;
+  color: var(--accent-color);
+  font-size: 12px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.message.assistant .message-bubble.dataset-bubble {
+  max-width: 100%;
+  width: 100%;
+  white-space: normal;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dataset-note {
+  white-space: pre-wrap;
+}
+
+.dataset-meta {
+  font-size: 12px;
+  color: var(--muted-text);
+}
+
+.dataset-table-wrap {
+  max-height: 320px;
+  overflow: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--panel-bg);
+}
+
+.dataset-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.dataset-table th,
+.dataset-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+  vertical-align: top;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.dataset-table th {
+  position: sticky;
+  top: 0;
+  background: #f7f8fa;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.dataset-table tbody tr:nth-child(even) {
+  background: #fafbfc;
+}
+
+.dataset-json {
+  margin: 0;
+  max-height: 320px;
+  overflow: auto;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--panel-bg);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  white-space: pre;
+}
+
+.dataset-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.download-btn {
+  padding: 6px 12px;
+  border: 1px solid var(--accent-color);
+  border-radius: 6px;
+  background: var(--panel-bg);
+  color: var(--accent-color);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.download-btn:hover {
+  background: var(--accent-color);
+  color: #fff;
+}

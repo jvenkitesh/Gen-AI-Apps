@@ -1,10 +1,10 @@
-# Contract Review – Trial 3 (JSON dataset rendering + download)
+# Contract Review Application
 
-Same app as [`contract_review_application`](../contract_review_application)
-(the same ingestion and chat webhooks), plus support for **structured JSON
-answers**. Open `index.html` directly in a browser, with no build step.
+Upload a PDF contract and chat about it. The contract is indexed by the
+n8n ingestion webhook and questions go to the chat webhook. Open
+`index.html` directly in a browser, with no build step.
 
-## What's new
+## JSON dataset rendering + download
 
 When the chat webhook's reply is JSON, it shows up as data instead of a raw
 text bubble:
