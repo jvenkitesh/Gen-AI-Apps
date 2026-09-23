@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contract Review</title>
+<title>Contract Review – Trial 3</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="app-header">
-    <h1>Contract Review</h1>
+    <h1>Contract Review <span class="header-tag">Trial 3 · JSON datasets</span></h1>
   </header>
 
   <main class="app-main">
@@ -44,14 +44,14 @@
       <div id="chat-messages" class="chat-messages">
         <div class="message assistant">
           <div class="message-bubble">
-            Upload a contract and ask me anything about it.
+            Upload a contract and ask me anything about it. Ask for structured data (e.g. "list all clauses as JSON") and I'll render it as a table you can download.
           </div>
         </div>
       </div>
 
       <form id="chat-form" class="chat-input-area">
         <textarea id="chat-input" placeholder="Upload a contract to start chatting..." rows="1" autocomplete="off" disabled></textarea>
-        <button type="submit" id="send-btn" class="send-btn" disabled>Send</button>
+        <button type="button" id="send-btn" class="send-btn" disabled>Send</button>
       </form>
     </section>
   </main>
