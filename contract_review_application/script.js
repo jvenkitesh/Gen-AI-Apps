@@ -11,6 +11,7 @@
   const chatInput = document.getElementById('chat-input');
   const chatMessages = document.getElementById('chat-messages');
   const sendBtn = document.getElementById('send-btn');
+  const downloadResponsesBtn = document.getElementById('download-responses-btn');
 
   // Ingestion webhook: takes the PDF once, right after upload. The workflow
   // behind it rebuilds a single shared in-memory vector store from this
@@ -343,6 +344,64 @@
     return message;
   }
 
+  // Successful question/response pairs are kept in the browser's
+  // localStorage (no backend) and exported as config.json on demand.
+  const RESPONSES_STORAGE_KEY = 'contractReviewResponses';
+
+  function loadSavedResponses() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(RESPONSES_STORAGE_KEY));
+      return Array.isArray(saved) ? saved : [];
+    } catch (err) {
+      return [];
+    }
+  }
+
+  // The AI Agent may return a structured answer ({ response, citation,
+  // reasoning }) as JSON or as a JSON string, possibly wrapped in n8n's
+  // { output: ... } envelope.
+  function findStructuredReply(data) {
+    if (typeof data === 'string') {
+      const parsed = parseJsonFromText(data);
+      return parsed ? findStructuredReply(parsed.json) : null;
+    }
+    if (Array.isArray(data)) return findStructuredReply(data[0]);
+    if (isPlainObject(data)) {
+      if ('citation' in data || 'citations' in data || 'reasoning' in data) {
+        return data;
+      }
+      const replyKey = REPLY_KEYS.find((k) => k in data);
+      return replyKey ? findStructuredReply(data[replyKey]) : null;
+    }
+    return null;
+  }
+
+  function saveResponse(question, data, reply) {
+    const structured = findStructuredReply(data) || {};
+    const answer = structured.response ?? structured.answer ?? structured.reply ?? structured.output;
+    const citation = structured.citation ?? structured.citations ?? [];
+
+    const entries = loadSavedResponses();
+    entries.push({
+      question,
+      response: answer !== undefined ? answer : reply.dataset !== undefined ? reply.dataset : reply.text,
+      citation: Array.isArray(citation) ? citation : [citation],
+      reasoning: typeof structured.reasoning === 'string' ? structured.reasoning : '',
+    });
+
+    try {
+      localStorage.setItem(RESPONSES_STORAGE_KEY, JSON.stringify(entries));
+      downloadResponsesBtn.hidden = false;
+    } catch (err) {
+      console.error('Could not save response to localStorage:', err);
+    }
+  }
+
+  downloadResponsesBtn.hidden = loadSavedResponses().length === 0;
+  downloadResponsesBtn.addEventListener('click', () => {
+    downloadFile(JSON.stringify(loadSavedResponses(), null, 2), 'config.json', 'application/json');
+  });
+
   async function handleSend(e) {
     if (e) e.preventDefault();
     const text = chatInput.value.trim();
@@ -387,6 +446,7 @@
       } else {
         appendMessage(reply.text, 'assistant');
       }
+      saveResponse(text, data, reply);
     } catch (err) {
       thinkingEl.remove();
       appendMessage(`Could not reach the workflow: ${err.message}`, 'error');
