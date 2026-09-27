@@ -11,6 +11,7 @@
   const chatInput = document.getElementById("chatInput");
   const chatMessages = document.getElementById("chatMessages");
   const sendBtn = document.getElementById("sendBtn");
+  const downloadResponsesBtn = document.getElementById("downloadResponsesBtn");
 
   // Ingestion webhook: takes the PDF once, right after upload. The
   // workflow behind it rebuilds a single shared in-memory vector store
@@ -154,6 +155,110 @@
     return "Received an empty response from the workflow.";
   }
 
+  function isPlainObject(value) {
+    return value !== null && typeof value === "object" && !Array.isArray(value);
+  }
+
+  function safeJsonParse(text) {
+    try {
+      return JSON.parse(text);
+    } catch (err) {
+      return undefined;
+    }
+  }
+
+  // Looks for a structured { response, citation, reasoning } object in the
+  // webhook payload, unwrapping n8n's { output: "<stringified json>" }
+  // envelope (optionally inside a 1-item array) one level. Returns null
+  // when no such object is present — the caller still saves using the
+  // plain text already shown in the chat, just without citation/reasoning.
+  function findStructuredReply(data) {
+    let value = data;
+
+    if (typeof value === "string") {
+      value = safeJsonParse(value);
+      if (value === undefined) return null;
+    }
+
+    if (Array.isArray(value) && value.length === 1) {
+      value = value[0];
+    }
+
+    if (isPlainObject(value) && "output" in value && !("response" in value)) {
+      let inner = value.output;
+      if (typeof inner === "string") {
+        inner = safeJsonParse(inner);
+        if (inner === undefined) return null;
+      }
+      value = inner;
+    }
+
+    if (Array.isArray(value) && value.length === 1) {
+      value = value[0];
+    }
+
+    return isPlainObject(value) && "response" in value ? value : null;
+  }
+
+  // Successful question/response pairs are kept in the browser's
+  // localStorage (no backend) and exported as config.json on demand.
+  const RESPONSES_STORAGE_KEY = "contractReviewAppResponses";
+
+  function loadSavedResponses() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(RESPONSES_STORAGE_KEY));
+      return Array.isArray(saved) ? saved : [];
+    } catch (err) {
+      return [];
+    }
+  }
+
+  // Saves a successful turn to localStorage. "response" always matches
+  // the text actually shown in the chat bubble; citation/reasoning are
+  // pulled from the raw webhook payload when the backend provides them.
+  function saveSuccessfulResponse(question, data, displayedText) {
+    const structured = findStructuredReply(data);
+    const rawCitation = structured ? structured.citation ?? structured.citations : undefined;
+    const citation = Array.isArray(rawCitation)
+      ? rawCitation.map((c) => String(c))
+      : rawCitation
+      ? [String(rawCitation)]
+      : [];
+    const reasoning = structured && typeof structured.reasoning === "string" ? structured.reasoning : "";
+
+    const entries = loadSavedResponses();
+    entries.push({
+      question,
+      response: displayedText,
+      citation,
+      reasoning,
+    });
+
+    try {
+      localStorage.setItem(RESPONSES_STORAGE_KEY, JSON.stringify(entries));
+      downloadResponsesBtn.hidden = false;
+    } catch (err) {
+      console.error("Could not save response to localStorage:", err);
+    }
+  }
+
+  function downloadFile(content, filename, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  downloadResponsesBtn.hidden = loadSavedResponses().length === 0;
+  downloadResponsesBtn.addEventListener("click", () => {
+    downloadFile(JSON.stringify(loadSavedResponses(), null, 2), "config.json", "application/json");
+  });
+
   chatForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const text = chatInput.value.trim();
@@ -190,7 +295,9 @@
         : await response.text();
 
       thinkingEl.remove();
-      addMessage(extractReplyText(data), "assistant");
+      const displayedText = extractReplyText(data);
+      addMessage(displayedText, "assistant");
+      saveSuccessfulResponse(text, data, displayedText);
     } catch (err) {
       thinkingEl.remove();
       addMessage(`Could not reach the workflow: ${err.message}`, "error");
