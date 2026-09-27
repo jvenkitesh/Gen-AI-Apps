@@ -617,20 +617,55 @@
     if (e.target === overlay) closeModal();
   });
 
-  // TEMPORARY mock submit handler — replace with a real Supabase insert
-  // once the backend is wired up. Simulates network latency and an
-  // occasional failure so both the success and error UI states can be
-  // exercised without a backend.
-  function submitFeedbackMock(payload) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (Math.random() < 0.15) {
-          reject(new Error('Something went wrong submitting your feedback. Please try again.'));
-        } else {
-          resolve({ id: `mock-${Date.now()}`, ...payload });
-        }
-      }, 900);
-    });
+  // Supabase: inserts into the public `feedback` table.
+  // The publishable key is safe in browser code. Database rules let it
+  // INSERT feedback only (no read, update or delete). Never put the
+  // service-role or secret key in this file.
+  const SUPABASE_URL = 'https://leqeqgrolnlbxhkjjdnq.supabase.co';
+  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_zS9sFpMaumUVtbI3B2kpmw_kIWYZYRF';
+
+  const MAX_COMMENT = 2000;
+  const MAX_NAME = 100;
+  const MAX_EMAIL = 254;
+  const DUPLICATE_WINDOW_MS = 60 * 1000;
+  const DUPLICATE_MESSAGE = 'You already sent this feedback. Thank you!';
+
+  let lastSubmission = null; // { fingerprint, at } of the last accepted submission
+
+  class FeedbackError extends Error {
+    constructor(message, kind) {
+      super(message);
+      this.kind = kind; // 'duplicate' | 'invalid' | 'network' | 'server'
+    }
+  }
+
+  async function submitFeedbackToSupabase(payload) {
+    let res;
+    try {
+      res = await fetch(`${SUPABASE_URL}/rest/v1/feedback`, {
+        method: 'POST',
+        headers: {
+          apikey: SUPABASE_PUBLISHABLE_KEY,
+          'Content-Type': 'application/json',
+          // The public role cannot read rows back, so ask for no body.
+          Prefer: 'return=minimal',
+        },
+        body: JSON.stringify(payload),
+      });
+    } catch (err) {
+      throw new FeedbackError('Network error. Check your connection and try again.', 'network');
+    }
+
+    if (res.ok) return;
+
+    const body = await res.json().catch(() => ({}));
+    if (res.status === 409 || body.code === '23505') {
+      throw new FeedbackError(DUPLICATE_MESSAGE, 'duplicate');
+    }
+    if (body.code === '23514' || body.code === '22P02') {
+      throw new FeedbackError('Some fields are not valid. Check your entries and try again.', 'invalid');
+    }
+    throw new FeedbackError('Something went wrong submitting your feedback. Please try again.', 'server');
   }
 
   form.addEventListener('submit', async (e) => {
@@ -646,14 +681,19 @@
     }
 
     const comment = commentInput.value.trim();
-    if (!comment) {
+    if (!comment || comment.length > MAX_COMMENT) {
+      commentError.textContent = comment
+        ? `Please keep your feedback under ${MAX_COMMENT} characters.`
+        : 'Please enter your feedback.';
       commentField.classList.add('has-error');
       commentError.hidden = false;
       valid = false;
     }
 
-    const email = emailInput.value.trim();
-    if (email && !EMAIL_RE.test(email)) {
+    const name = nameInput.value.trim().slice(0, MAX_NAME);
+
+    const email = emailInput.value.trim().toLowerCase();
+    if (email && (email.length > MAX_EMAIL || !EMAIL_RE.test(email))) {
       emailField.classList.add('has-error');
       emailError.hidden = false;
       valid = false;
@@ -670,22 +710,32 @@
       return;
     }
 
+    // Block a repeat of the same feedback right after a successful send.
+    const fingerprint = `${email}|${comment}`;
+    if (lastSubmission && lastSubmission.fingerprint === fingerprint &&
+        Date.now() - lastSubmission.at < DUPLICATE_WINDOW_MS) {
+      showStatusError(DUPLICATE_MESSAGE);
+      return;
+    }
+
     statusEl.hidden = true;
     setSubmitting(true);
 
     try {
-      await submitFeedbackMock({
+      await submitFeedbackToSupabase({
         rating: selectedRating,
-        comment,
-        name: nameInput.value.trim(),
-        email,
+        feedback: comment,
+        name: name || null,
+        email: email || null,
       });
+      lastSubmission = { fingerprint, at: Date.now() };
       setSubmitting(false);
       form.hidden = true;
       successView.hidden = false;
       doneBtn.focus();
     } catch (err) {
       setSubmitting(false);
+      if (err.kind === 'duplicate') lastSubmission = { fingerprint, at: Date.now() };
       showStatusError(err.message);
     }
   });

@@ -85,18 +85,18 @@
 
           <div class="field" id="comment-field">
             <label class="field-label" for="feedback-comment">Feedback <span class="required-mark" aria-hidden="true">*</span></label>
-            <textarea id="feedback-comment" name="comment" rows="4" placeholder="Tell us what worked well or what we should improve..."></textarea>
+            <textarea id="feedback-comment" name="comment" rows="4" maxlength="2000" placeholder="Tell us what worked well or what we should improve..."></textarea>
             <p class="field-error" id="comment-error" role="alert" hidden>Please enter your feedback.</p>
           </div>
 
           <div class="field">
             <label class="field-label" for="feedback-name">Name <span class="optional-mark">(optional)</span></label>
-            <input type="text" id="feedback-name" name="name" placeholder="Jane Doe" autocomplete="name">
+            <input type="text" id="feedback-name" name="name" maxlength="100" placeholder="Jane Doe" autocomplete="name">
           </div>
 
           <div class="field" id="email-field">
             <label class="field-label" for="feedback-email">Email <span class="optional-mark">(optional)</span></label>
-            <input type="email" id="feedback-email" name="email" placeholder="jane@example.com" autocomplete="email">
+            <input type="email" id="feedback-email" name="email" maxlength="254" placeholder="jane@example.com" autocomplete="email">
             <p class="field-error" id="email-error" role="alert" hidden>Please enter a valid email address.</p>
           </div>
 
