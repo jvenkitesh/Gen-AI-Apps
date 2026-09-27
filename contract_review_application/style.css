@@ -14,6 +14,8 @@
   --accent-hover: #2558c4;
   --text-color: #1c1f23;
   --muted-text: #6b7280;
+  --muted-bg: #f0f2f5;
+  --highlight-bg: #eef4ff;
 }
 
 body {
@@ -80,7 +82,7 @@ body {
 
 .upload-area.dragover {
   border-color: var(--accent-color);
-  background: #eef4ff;
+  background: var(--highlight-bg);
 }
 
 .upload-label {
@@ -114,7 +116,7 @@ body {
   justify-content: space-between;
   margin: 0 16px 12px;
   padding: 8px 12px;
-  background: #f0f2f5;
+  background: var(--muted-bg);
   border-radius: 6px;
   font-size: 14px;
 }
@@ -193,7 +195,7 @@ body {
 }
 
 .message.assistant .message-bubble {
-  background: #f0f2f5;
+  background: var(--muted-bg);
   color: var(--text-color);
   border-bottom-left-radius: 4px;
 }
@@ -237,7 +239,7 @@ body {
 }
 
 #chat-input:disabled {
-  background: #f0f2f5;
+  background: var(--muted-bg);
   color: var(--muted-text);
   cursor: not-allowed;
 }
@@ -258,7 +260,7 @@ body {
 }
 
 .send-btn:disabled {
-  background: #a9b8d4;
+  background: #64748b;
   cursor: not-allowed;
 }
 
@@ -273,7 +275,7 @@ body {
   margin-left: 8px;
   padding: 2px 8px;
   border-radius: 999px;
-  background: #eef4ff;
+  background: var(--highlight-bg);
   color: var(--accent-color);
   font-size: 12px;
   font-weight: 600;
@@ -325,7 +327,7 @@ body {
 .dataset-table th {
   position: sticky;
   top: 0;
-  background: #f7f8fa;
+  background: var(--bg-color);
   font-weight: 600;
   white-space: nowrap;
 }

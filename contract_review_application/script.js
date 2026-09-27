@@ -13,6 +13,11 @@
   const sendBtn = document.getElementById('send-btn');
   const downloadResponsesBtn = document.getElementById('download-responses-btn');
 
+  // Chat stays disabled until a contract is successfully ingested; set
+  // explicitly here rather than relying solely on the markup's `disabled`.
+  chatInput.disabled = true;
+  sendBtn.disabled = true;
+
   // Ingestion webhook: takes the PDF once, right after upload. The workflow
   // behind it rebuilds a single shared in-memory vector store from this
   // file, so there's no session/document ID to track — one contract loaded
@@ -24,9 +29,13 @@
   const CHAT_WEBHOOK_URL = 'https://jyotiv99.app.n8n.cloud/webhook/d9fcf5d7-7e4a-4682-9e47-21338e063954';
 
   let currentObjectUrl = null;
+  let ingestionToken = 0;
 
   function loadPdf(file) {
-    if (!file || file.type !== 'application/pdf') {
+    if (!file) {
+      return;
+    }
+    if (file.type !== 'application/pdf') {
       alert('Please upload a PDF file.');
       return;
     }
@@ -50,6 +59,11 @@
   // indexed into the shared vector store before the user is allowed to
   // chat against it.
   async function ingestContract(file) {
+    // Guards against a second upload starting before this one's request
+    // resolves: a stale response then only cleans up its own status
+    // bubble and leaves the newer ingestion's state alone.
+    const token = ++ingestionToken;
+
     chatInput.disabled = true;
     sendBtn.disabled = true;
 
@@ -69,10 +83,12 @@
       }
 
       statusEl.remove();
+      if (token !== ingestionToken) return;
       chatInput.disabled = false;
       sendBtn.disabled = false;
     } catch (err) {
       statusEl.remove();
+      if (token !== ingestionToken) return;
       appendMessage(`Could not index contract: ${err.message}`, 'error');
       clearPdf();
     }
@@ -460,7 +476,7 @@
   chatForm.addEventListener('submit', handleSend);
 
   chatInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
       e.preventDefault();
       handleSend(e);
     }
