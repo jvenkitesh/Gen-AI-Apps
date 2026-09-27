@@ -487,3 +487,206 @@
     chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
   });
 })();
+
+// Feedback modal — self-contained; does not touch any contract/chat state above.
+(function () {
+  const feedbackBtn = document.getElementById('feedback-btn');
+  const overlay = document.getElementById('feedback-overlay');
+  const closeBtn = document.getElementById('feedback-close-btn');
+  const form = document.getElementById('feedback-form');
+  const ratingField = document.getElementById('rating-field');
+  const starButtons = Array.from(document.querySelectorAll('.star-btn'));
+  const ratingError = document.getElementById('rating-error');
+  const commentField = document.getElementById('comment-field');
+  const commentInput = document.getElementById('feedback-comment');
+  const commentError = document.getElementById('comment-error');
+  const nameInput = document.getElementById('feedback-name');
+  const emailField = document.getElementById('email-field');
+  const emailInput = document.getElementById('feedback-email');
+  const emailError = document.getElementById('email-error');
+  const statusEl = document.getElementById('feedback-status');
+  const submitBtn = document.getElementById('feedback-submit-btn');
+  const submitLabel = submitBtn.querySelector('.btn-label');
+  const successView = document.getElementById('feedback-success');
+  const doneBtn = document.getElementById('feedback-done-btn');
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  let selectedRating = 0;
+  let isSubmitting = false;
+  let lastFocusedEl = null;
+
+  function setRating(value) {
+    selectedRating = value;
+    starButtons.forEach((btn) => {
+      const filled = Number(btn.dataset.value) <= value;
+      btn.classList.toggle('filled', filled);
+      btn.setAttribute('aria-pressed', String(filled));
+    });
+    if (value > 0) {
+      ratingField.classList.remove('has-error');
+      ratingError.hidden = true;
+    }
+  }
+
+  starButtons.forEach((btn) => {
+    btn.addEventListener('click', () => setRating(Number(btn.dataset.value)));
+  });
+
+  commentInput.addEventListener('input', () => {
+    if (commentInput.value.trim()) {
+      commentField.classList.remove('has-error');
+      commentError.hidden = true;
+    }
+  });
+
+  emailInput.addEventListener('input', () => {
+    if (!emailInput.value.trim() || EMAIL_RE.test(emailInput.value.trim())) {
+      emailField.classList.remove('has-error');
+      emailError.hidden = true;
+    }
+  });
+
+  function setSubmitting(submitting) {
+    isSubmitting = submitting;
+    submitBtn.disabled = submitting;
+    if (submitting) {
+      submitLabel.textContent = 'Submitting…';
+      if (!submitBtn.querySelector('.btn-spinner')) {
+        const spinner = document.createElement('span');
+        spinner.className = 'btn-spinner';
+        spinner.setAttribute('aria-hidden', 'true');
+        submitBtn.insertBefore(spinner, submitLabel);
+      }
+    } else {
+      submitLabel.textContent = 'Submit Feedback';
+      const spinner = submitBtn.querySelector('.btn-spinner');
+      if (spinner) spinner.remove();
+    }
+  }
+
+  function showStatusError(message) {
+    statusEl.textContent = message;
+    statusEl.className = 'feedback-status error';
+    statusEl.hidden = false;
+  }
+
+  function resetForm() {
+    form.reset();
+    setRating(0);
+    [ratingField, commentField, emailField].forEach((f) => f.classList.remove('has-error'));
+    [ratingError, commentError, emailError].forEach((el) => {
+      el.hidden = true;
+    });
+    statusEl.hidden = true;
+    statusEl.textContent = '';
+    statusEl.className = 'feedback-status';
+    setSubmitting(false);
+    form.hidden = false;
+    successView.hidden = true;
+  }
+
+  function handleKeydown(e) {
+    if (e.key === 'Escape') {
+      closeModal();
+    }
+  }
+
+  function openModal() {
+    lastFocusedEl = document.activeElement;
+    resetForm();
+    overlay.hidden = false;
+    requestAnimationFrame(() => overlay.classList.add('visible'));
+    document.addEventListener('keydown', handleKeydown);
+    starButtons[0].focus();
+  }
+
+  function closeModal() {
+    overlay.classList.remove('visible');
+    document.removeEventListener('keydown', handleKeydown);
+    setTimeout(() => {
+      overlay.hidden = true;
+    }, 150);
+    if (lastFocusedEl) lastFocusedEl.focus();
+  }
+
+  feedbackBtn.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  doneBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeModal();
+  });
+
+  // TEMPORARY mock submit handler — replace with a real Supabase insert
+  // once the backend is wired up. Simulates network latency and an
+  // occasional failure so both the success and error UI states can be
+  // exercised without a backend.
+  function submitFeedbackMock(payload) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (Math.random() < 0.15) {
+          reject(new Error('Something went wrong submitting your feedback. Please try again.'));
+        } else {
+          resolve({ id: `mock-${Date.now()}`, ...payload });
+        }
+      }, 900);
+    });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    let valid = true;
+
+    if (selectedRating < 1) {
+      ratingField.classList.add('has-error');
+      ratingError.hidden = false;
+      valid = false;
+    }
+
+    const comment = commentInput.value.trim();
+    if (!comment) {
+      commentField.classList.add('has-error');
+      commentError.hidden = false;
+      valid = false;
+    }
+
+    const email = emailInput.value.trim();
+    if (email && !EMAIL_RE.test(email)) {
+      emailField.classList.add('has-error');
+      emailError.hidden = false;
+      valid = false;
+    }
+
+    if (!valid) {
+      if (ratingField.classList.contains('has-error')) {
+        starButtons[0].focus();
+      } else {
+        const firstInvalid = form.querySelector('.has-error');
+        const focusable = firstInvalid && firstInvalid.querySelector('input, textarea');
+        if (focusable) focusable.focus();
+      }
+      return;
+    }
+
+    statusEl.hidden = true;
+    setSubmitting(true);
+
+    try {
+      await submitFeedbackMock({
+        rating: selectedRating,
+        comment,
+        name: nameInput.value.trim(),
+        email,
+      });
+      setSubmitting(false);
+      form.hidden = true;
+      successView.hidden = false;
+      doneBtn.focus();
+    } catch (err) {
+      setSubmitting(false);
+      showStatusError(err.message);
+    }
+  });
+})();
