@@ -16,6 +16,7 @@
   --muted-text: #6b7280;
   --muted-bg: #f0f2f5;
   --highlight-bg: #eef4ff;
+  --reasoning-color: #6600cc;
 }
 
 body {
@@ -644,4 +645,53 @@ body {
   .app-header-bar {
     flex-wrap: wrap;
   }
+}
+
+/* Structured chat reply: Response / Citation / Reasoning */
+.message.assistant .message-bubble.structured-bubble {
+  max-width: 90%;
+  white-space: normal;
+}
+
+.structured-section + .structured-rule {
+  margin-top: 10px;
+}
+
+.structured-rule {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 10px 0;
+}
+
+.structured-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted-text);
+  margin-bottom: 4px;
+}
+
+.structured-text {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.citation-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.citation-list li {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.reasoning-text {
+  color: var(--reasoning-color);
+  font-style: italic;
 }

@@ -392,6 +392,123 @@
     return null;
   }
 
+  function safeJsonParse(text) {
+    try {
+      return JSON.parse(text);
+    } catch (err) {
+      return undefined;
+    }
+  }
+
+  // Parses the chat webhook's structured answer: either { response,
+  // citation, reasoning } directly, or wrapped one level by n8n as
+  // { output: "<stringified json>" } (optionally inside a 1-item array).
+  // Returns null on any parse failure or when "response" is missing, so
+  // the caller can fall back to the existing plain-text/dataset rendering.
+  function parseStructuredReply(raw) {
+    let value = raw;
+
+    if (typeof value === 'string') {
+      value = safeJsonParse(value);
+      if (value === undefined) return null;
+    }
+
+    if (Array.isArray(value) && value.length === 1) {
+      value = value[0];
+    }
+
+    if (isPlainObject(value) && 'output' in value && !('response' in value)) {
+      let inner = value.output;
+      if (typeof inner === 'string') {
+        inner = safeJsonParse(inner);
+        if (inner === undefined) return null;
+      }
+      value = inner;
+    }
+
+    if (Array.isArray(value) && value.length === 1) {
+      value = value[0];
+    }
+
+    if (!isPlainObject(value) || value.response === undefined || value.response === null || String(value.response).trim() === '') {
+      return null;
+    }
+
+    const rawCitation = value.citation ?? value.citations;
+    const citation = Array.isArray(rawCitation)
+      ? rawCitation.filter((c) => c !== null && c !== undefined && String(c).trim() !== '')
+      : rawCitation
+      ? [rawCitation]
+      : [];
+
+    return {
+      response: String(value.response),
+      citation: citation.map((c) => String(c)),
+      reasoning: typeof value.reasoning === 'string' ? value.reasoning.trim() : '',
+    };
+  }
+
+  // Renders the three labeled sections (Response / Citation / Reasoning)
+  // inside a single assistant bubble, matching the app's existing bubble
+  // styling — only the content layout inside the bubble is custom.
+  function appendStructuredReply(structured) {
+    const message = document.createElement('div');
+    message.className = 'message assistant';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'message-bubble structured-bubble';
+
+    const responseSection = document.createElement('div');
+    responseSection.className = 'structured-section';
+    const responseLabel = document.createElement('div');
+    responseLabel.className = 'structured-label';
+    responseLabel.textContent = 'Response';
+    const responseText = document.createElement('div');
+    responseText.className = 'structured-text';
+    responseText.textContent = structured.response;
+    responseSection.append(responseLabel, responseText);
+    bubble.appendChild(responseSection);
+
+    if (structured.citation.length > 0) {
+      bubble.appendChild(document.createElement('hr')).className = 'structured-rule';
+
+      const citationSection = document.createElement('div');
+      citationSection.className = 'structured-section';
+      const citationLabel = document.createElement('div');
+      citationLabel.className = 'structured-label';
+      citationLabel.textContent = 'Citation';
+      const list = document.createElement('ul');
+      list.className = 'citation-list';
+      structured.citation.forEach((item) => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        list.appendChild(li);
+      });
+      citationSection.append(citationLabel, list);
+      bubble.appendChild(citationSection);
+    }
+
+    if (structured.reasoning) {
+      bubble.appendChild(document.createElement('hr')).className = 'structured-rule';
+
+      const reasoningSection = document.createElement('div');
+      reasoningSection.className = 'structured-section';
+      const reasoningLabel = document.createElement('div');
+      reasoningLabel.className = 'structured-label';
+      reasoningLabel.textContent = 'Reasoning';
+      const reasoningText = document.createElement('div');
+      reasoningText.className = 'structured-text reasoning-text';
+      reasoningText.textContent = structured.reasoning;
+      reasoningSection.append(reasoningLabel, reasoningText);
+      bubble.appendChild(reasoningSection);
+    }
+
+    message.appendChild(bubble);
+    chatMessages.appendChild(message);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return message;
+  }
+
   function saveResponse(question, data, reply) {
     const structured = findStructuredReply(data) || {};
     const answer = structured.response ?? structured.answer ?? structured.reply ?? structured.output;
@@ -457,7 +574,10 @@
 
       thinkingEl.remove();
       const reply = resolveReply(data);
-      if (reply.dataset !== undefined) {
+      const structured = parseStructuredReply(data);
+      if (structured) {
+        appendStructuredReply(structured);
+      } else if (reply.dataset !== undefined) {
         appendDataset(reply.dataset, reply.note);
       } else {
         appendMessage(reply.text, 'assistant');
