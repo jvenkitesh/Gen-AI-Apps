@@ -8,7 +8,12 @@
 </head>
 <body>
   <header class="app-header">
-    <h1>Contract Review <span class="header-tag">Trial 3 · JSON datasets</span></h1>
+    <div class="app-header-bar">
+      <h1>Contract Review <span class="header-tag">Trial 3 · JSON datasets</span></h1>
+      <nav class="app-nav">
+        <button type="button" id="feedback-btn" class="feedback-nav-btn">Feedback</button>
+      </nav>
+    </div>
   </header>
 
   <main class="app-main">
@@ -56,6 +61,65 @@
       </form>
     </section>
   </main>
+
+  <div id="feedback-overlay" class="modal-overlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="feedback-title">
+      <div class="modal-header">
+        <h2 id="feedback-title">Send Feedback</h2>
+        <button type="button" id="feedback-close-btn" class="modal-close-btn" aria-label="Close feedback form">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <form id="feedback-form" novalidate>
+          <div class="field" id="rating-field">
+            <span class="field-label" id="feedback-rating-label">Rating <span class="required-mark" aria-hidden="true">*</span></span>
+            <div class="star-rating" role="group" aria-labelledby="feedback-rating-label">
+              <button type="button" class="star-btn" data-value="1" aria-pressed="false" aria-label="Rate 1 out of 5">★</button>
+              <button type="button" class="star-btn" data-value="2" aria-pressed="false" aria-label="Rate 2 out of 5">★</button>
+              <button type="button" class="star-btn" data-value="3" aria-pressed="false" aria-label="Rate 3 out of 5">★</button>
+              <button type="button" class="star-btn" data-value="4" aria-pressed="false" aria-label="Rate 4 out of 5">★</button>
+              <button type="button" class="star-btn" data-value="5" aria-pressed="false" aria-label="Rate 5 out of 5">★</button>
+            </div>
+            <p class="field-error" id="rating-error" role="alert" hidden>Please select a rating.</p>
+          </div>
+
+          <div class="field" id="comment-field">
+            <label class="field-label" for="feedback-comment">Feedback <span class="required-mark" aria-hidden="true">*</span></label>
+            <textarea id="feedback-comment" name="comment" rows="4" placeholder="Tell us what worked well or what we should improve..."></textarea>
+            <p class="field-error" id="comment-error" role="alert" hidden>Please enter your feedback.</p>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="feedback-name">Name <span class="optional-mark">(optional)</span></label>
+            <input type="text" id="feedback-name" name="name" placeholder="Jane Doe" autocomplete="name">
+          </div>
+
+          <div class="field" id="email-field">
+            <label class="field-label" for="feedback-email">Email <span class="optional-mark">(optional)</span></label>
+            <input type="email" id="feedback-email" name="email" placeholder="jane@example.com" autocomplete="email">
+            <p class="field-error" id="email-error" role="alert" hidden>Please enter a valid email address.</p>
+          </div>
+
+          <div id="feedback-status" class="feedback-status" role="status" aria-live="polite" hidden></div>
+
+          <div class="modal-actions">
+            <button type="submit" id="feedback-submit-btn" class="feedback-submit-btn">
+              <span class="btn-label">Submit Feedback</span>
+            </button>
+          </div>
+        </form>
+
+        <div id="feedback-success" class="feedback-success" role="status" hidden>
+          <div class="success-icon" aria-hidden="true">✓</div>
+          <p class="success-title">Thanks for your feedback!</p>
+          <p class="success-subtext">We appreciate you taking the time to help us improve.</p>
+          <div class="modal-actions">
+            <button type="button" id="feedback-done-btn" class="feedback-submit-btn">Done</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
