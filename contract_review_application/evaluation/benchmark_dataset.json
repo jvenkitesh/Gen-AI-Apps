@@ -1,0 +1,296 @@
+{
+  "contract": "Intuit MSA",
+  "source_pdf": "Intuit_MSA_contract.pdf",
+  "source_sheet": "HHH_Framework_Evaluation_-_Sample.csv",
+  "count": 36,
+  "items": [
+    {
+      "id": 1,
+      "key_term": "Service Provider Name",
+      "question": "What is the Service Provider Name",
+      "ground_truth": "Arvato Services Inc.",
+      "answerable": true,
+      "location": "1"
+    },
+    {
+      "id": 2,
+      "key_term": "Customer Name",
+      "question": "What is the Customer Name?",
+      "ground_truth": "Intuit Inc.",
+      "answerable": true,
+      "location": "6,10"
+    },
+    {
+      "id": 3,
+      "key_term": "Contract start date",
+      "question": "What is the Contract start date?",
+      "ground_truth": "May 28, 2003",
+      "answerable": true,
+      "location": "1,8,10"
+    },
+    {
+      "id": 4,
+      "key_term": "Contract end date",
+      "question": "what is the Contract end date / Expiration Date?",
+      "ground_truth": "May 28, 2006",
+      "answerable": true,
+      "location": "Page 3 , Section 6(a)"
+    },
+    {
+      "id": 5,
+      "key_term": "Term Period In Months",
+      "question": "What is the total term period or duration of this contract? Provide answer in the form of number of months if possible",
+      "ground_truth": "Mentioned 3years means (3*12)=36 Months",
+      "answerable": true,
+      "location": "Page 3 , Section 6(a)"
+    },
+    {
+      "id": 6,
+      "key_term": "Deal Value",
+      "question": "What is the total amount to be paid by the customer?",
+      "ground_truth": "N/A",
+      "answerable": false,
+      "location": null
+    },
+    {
+      "id": 7,
+      "key_term": "Governing Law",
+      "question": "What is the Governing Law? Provide just the name of the governing law",
+      "ground_truth": "State of California",
+      "answerable": true,
+      "location": "Page 6 , Section 14(d)"
+    },
+    {
+      "id": 8,
+      "key_term": "Auto Renewal",
+      "question": "Will this agreement Automatically Renew? Answer Yes or No",
+      "ground_truth": "No",
+      "answerable": true,
+      "location": "Page 3 , Section 6(a)"
+    },
+    {
+      "id": 9,
+      "key_term": "Termination Notice In Days",
+      "question": "What is the duration before which either party may terminate the Agreement? Provide answer in the form of number of days if possible",
+      "ground_truth": "20 days",
+      "answerable": true,
+      "location": "Page 3, Section 6(b)"
+    },
+    {
+      "id": 10,
+      "key_term": "Data Breach Notice In Hours",
+      "question": "What is the duration of Data Breach Notice? Provide answer in the form of number of hours if possible",
+      "ground_truth": "N/A",
+      "answerable": false,
+      "location": null
+    },
+    {
+      "id": 11,
+      "key_term": "Billing frequency (monthly, quarterly, annually, other)",
+      "question": "What is the billing frequency of this agreement?",
+      "ground_truth": "Monthly",
+      "answerable": true,
+      "location": "Page 2, Section4(a)"
+    },
+    {
+      "id": 12,
+      "key_term": "Renewal Period (Months)",
+      "question": "What is the renewal period for this contract?",
+      "ground_truth": "N/A",
+      "answerable": false,
+      "location": null
+    },
+    {
+      "id": 13,
+      "key_term": "Notice to not auto renew (Days)",
+      "question": "Do customer has to send a notice to stop the auto renwal ?",
+      "ground_truth": "N/A",
+      "answerable": false,
+      "location": null
+    },
+    {
+      "id": 14,
+      "key_term": "Net payment terms (Net 30, 45, 60, 75, 90, other)",
+      "question": "What are the number of days within which the client is expected to make payment to the service provider after receiving an invoice?",
+      "ground_truth": "Net 20",
+      "answerable": true,
+      "location": "Page 2, Section4(c)"
+    },
+    {
+      "id": 15,
+      "key_term": "Termination for Breach (Yes, No, N/A)",
+      "question": "Does this contract allows for termination for material breach?",
+      "ground_truth": "Yes",
+      "answerable": true,
+      "location": "Page 3 , Section 6(b)"
+    },
+    {
+      "id": 16,
+      "key_term": "Termination for cause (Yes, No, N/A)",
+      "question": "Does this contract allows for termination for cause?",
+      "ground_truth": "Yes",
+      "answerable": true,
+      "location": "Page 3 , Section 6(b)"
+    },
+    {
+      "id": 17,
+      "key_term": "Termination without cause (Yes, No, N/A)",
+      "question": "Does this contract allows for termination without cause?",
+      "ground_truth": "Yes",
+      "answerable": true,
+      "location": "Page 3 , Section 6(c)"
+    },
+    {
+      "id": 18,
+      "key_term": "Termination for convenience (Yes, No, N/A)",
+      "question": "Does this contract allows for termination for convenience?",
+      "ground_truth": "N/A",
+      "answerable": false,
+      "location": null
+    },
+    {
+      "id": 19,
+      "key_term": "Notice of termination for convenience (Days)",
+      "question": "What is the duration of notice period that each party needs to provide before applying for the termination for convenience?",
+      "ground_truth": "N/A",
+      "answerable": false,
+      "location": null
+    },
+    {
+      "id": 20,
+      "key_term": "Late Payment Charges (Yes, No, N/A)",
+      "question": "Do customer need to pay charges or pentalties for the late payment of invoice?",
+      "ground_truth": "N/A",
+      "answerable": false,
+      "location": null
+    },
+    {
+      "id": 21,
+      "key_term": "Late Payment Penalty",
+      "question": "How are the late payment pentalties or fees charged to customers ?",
+      "ground_truth": "N/A",
+      "answerable": false,
+      "location": null
+    },
+    {
+      "id": 22,
+      "key_term": "Limitations of liability (Amount)",
+      "question": "What is the amount covered in the clause for limitations of liability ?",
+      "ground_truth": "$5,000,000 or amounts paid by Intuit to Contractor in the past 12 months",
+      "answerable": true,
+      "location": "Page 6"
+    },
+    {
+      "id": 23,
+      "key_term": "Assignment (consent, No consent, N/A)",
+      "question": "Do customer needs to provide consent to the service provider before assigning its rights or obligations to another or third party?",
+      "ground_truth": "Consent",
+      "answerable": true,
+      "location": "Page 6, Section 14(b)"
+    },
+    {
+      "id": 24,
+      "key_term": "Name and logo use (Yes, No, N/A)",
+      "question": "Does this contract allows the service provider to use the name and logo of customer?",
+      "ground_truth": "N/A",
+      "answerable": false,
+      "location": "Page 4, Section 7"
+    },
+    {
+      "id": 25,
+      "key_term": "Deletion of Data (Yes, No, N/A)",
+      "question": "Does this contract has a provision that mentions that customer data will be deleted upon request by customer or after closure or termination of agreement for whatsoever reason?",
+      "ground_truth": "Yes",
+      "answerable": true,
+      "location": "Page 4, Section 9(a)"
+    },
+    {
+      "id": 26,
+      "key_term": "Customer Indemnity",
+      "question": "What are the terms for customer indemnification?",
+      "ground_truth": "Intuit agrees to defend, indemnify and hold Contractor and its affiliates, and all of their respective officers, directors, agents and employees, harmless from and against any and all Claims asserted by a third party arising out of or related to, and incurred by such indemnitee in connection with: (i) any infringement or misappropriation of any patent, invention, trade secret, copyright, trademark, proprietary information nondisclosure or other proprietary rights resulting from the use of any Intuit Materials or Intuit resources by Contractor in the performance of the Services or provision of any deliverables, other than claims based upon or arising out of any combination, operation or use of any Intuit Materials or Intuit resources with systems, software or other resources not provided by Intuit if combined, operated or used in a manner other than that to which the parties have agreed; (ii) the damage to or loss or destruction of any real or tangible personal property in the possession or under the control of Intuit, except to the extent proximately caused by Contractor or its agents or employees; (iii) the death or bodily injury of any agent, employee, subcontractor, customer, business invitee or business visitor of Intuit, except to the extent proximately caused by Contractor or its agents or employees; or (iv) the negligent acts, omissions and/or willful misconduct of Intuit in using the Services provided by Contractor, or in supplying the Intuit Materials or any Intuit resources, under this Agreement. Notwithstanding the foregoing, Intuit shall have no duty to indemnify Contractor for Claims to the extent arising from the Contractor Materials or Contractor Provided Systems, whether provided, distributed or otherwise used or handled by Intuit or by Contractor on behalf of Intuit.",
+      "answerable": true,
+      "location": "Page 5, Section 11(b)"
+    },
+    {
+      "id": 27,
+      "key_term": "Service Provider indemnity",
+      "question": "What are the terms for service provider indemnification?",
+      "ground_truth": "Contractor defends, indemnifies Intuit from claims, liabilities, losses, damages, actions, judgments, costs, expenses including attorneys' fees arising from IP infringement, misconduct, death/bodily injury except caused by Intuit; Intuit indemnifies Contractor from claims arising from Intuit's misconduct using services or materials; Notice of claims must be given promptly; Indemnifying Party directs defense, settlement; Indemnified may employ separate counsel if conflict of interest or defense not assumed; No liability for settlements without written consent; Indemnifying Party obligations not relieved by lack of notice except if damage from lack of actual notice.",
+      "answerable": true,
+      "location": "Page 5, Section 11(b)"
+    },
+    {
+      "id": 28,
+      "key_term": "Customer notice for indemnitiy claim",
+      "question": "Do customer or client needs to send a notice for claiming the indemnification?",
+      "ground_truth": "The party seeking indemnification under Section 11(a) or 11(b), as the case may be (the “Indemnified Party”), will give prompt written notice to the other party (the “Indemnifying Party”). (The failure by an Indemnified Party to give notice as provided, above, shall not relieve the Indemnifying Party of its obligations under this Section 11(c), except to the extent that the failure results in the failure of actual notice and the Indemnifying Party is damaged as a result of the failure to give notice.)",
+      "answerable": true,
+      "location": "Page 5, Section 11(c)"
+    },
+    {
+      "id": 29,
+      "key_term": "Indemnify Attorney fees (Yes, No, N/A)",
+      "question": "Does this contract's indimnification terms cover the attorney's fees for both service provider and customer?",
+      "ground_truth": "Yes",
+      "answerable": true,
+      "location": "Page 5, Section 11(c)"
+    },
+    {
+      "id": 30,
+      "key_term": "Price increase (Yes, No, N/A)",
+      "question": "Does this contract has provision for increase the fees or payment or price ?",
+      "ground_truth": "Yes",
+      "answerable": true,
+      "location": "Page 3, Section (d)"
+    },
+    {
+      "id": 31,
+      "key_term": "Notice for price increase (days)",
+      "question": "What is the duration of notice for notifying customer about the increase in price or fees?",
+      "ground_truth": "N/A",
+      "answerable": false,
+      "location": null
+    },
+    {
+      "id": 32,
+      "key_term": "Insurance Clause",
+      "question": "What is the insurance clause according to this agreement?",
+      "ground_truth": "Insurance. Contractor will, at Contractor’s expense, maintain its current insurance policies that cover Contractor’s activities under this Agreement and the activities of Contractor’s employees, agents and representatives. Contractor will name Intuit as an additional insured on such policy. Contractor shall provide Intuit with a certificate of insurance evidencing such coverage. In addition, Contractor will provide Intuit with written notice of any cancellation or reduction in coverage or limits",
+      "answerable": true,
+      "location": "Page 5 . Section 12"
+    },
+    {
+      "id": 33,
+      "key_term": "Maintenance of Insurance",
+      "question": "What is the provision for maintainance of insurance in this agreement?",
+      "ground_truth": "Contractor will, at Contractor’s expense, maintain its current insurance policies that cover Contractor’s activities under this Agreement and the activities of Contractor’s employees, agents and representatives.",
+      "answerable": true,
+      "location": "Page 5 . Section 12"
+    },
+    {
+      "id": 34,
+      "key_term": "Provide notice for insurance (Days)",
+      "question": "What is the notice period for providing the insurance?",
+      "ground_truth": "N/A",
+      "answerable": false,
+      "location": null
+    },
+    {
+      "id": 35,
+      "key_term": "Service Provider Intellectual Property Rights",
+      "question": "What are the intellectual property rights for the service provider in this agreement?",
+      "ground_truth": "Contractor shall own all intellectual property rights in and to the Contractor Materials and Intuit shall own all intellectual property rights in and to the Intuit Materials.",
+      "answerable": true,
+      "location": "Page 4, Section 8(a)"
+    },
+    {
+      "id": 36,
+      "key_term": "Customer Intellectual property rights",
+      "question": "What are the intellectual property rights for customer in this agreement?",
+      "ground_truth": "Contractor shall own all intellectual property rights in and to the Contractor Materials and Intuit shall own all intellectual property rights in and to the Intuit Materials.",
+      "answerable": true,
+      "location": "Page 4, Section 8(a)"
+    }
+  ]
+}
